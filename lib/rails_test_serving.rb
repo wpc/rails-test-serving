@@ -383,9 +383,7 @@ module RailsTestServing
     
     def perform_clean_up
       ActionController::Dispatcher.new(StringIO.new).cleanup_application
-      if defined?(Fixtures) && Fixtures.respond_to?(:reset_cache)
-        Fixtures.reset_cache
-      end
+      Fixtures.reset_cache if defined?(Fixtures) && Fixtures.respond_to?(:reset_cache)
     end
     
     def remove_tests
