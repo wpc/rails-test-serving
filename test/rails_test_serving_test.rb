@@ -1,4 +1,5 @@
 require 'rubygems'
+
 require 'test/unit'
 require 'mocha'
 Mocha::Configuration.prevent :stubbing_non_existent_method
@@ -10,6 +11,34 @@ class RailsTestServingTest < Test::Unit::TestCase
   include RailsTestServing
   
 # class
+
+  def test_service_uri
+    # RAILS_ROOT is the current directory
+    setup_service_uri_test do
+      FileTest.expects(:file?).with("config/boot.rb").returns true
+      FileUtils.expects(:mkpath).with("tmp/sockets")
+      assert_equal "drbunix:tmp/sockets/test_server.sock", RailsTestServing.service_uri
+    end
+    
+    # RAILS_ROOT is in the parent directory
+    setup_service_uri_test do
+      FileTest.stubs(:file?).with("config/boot.rb").returns false
+      FileTest.stubs(:file?).with("../config/boot.rb").returns true
+      FileUtils.expects(:mkpath).with("../tmp/sockets")
+      assert_equal "drbunix:../tmp/sockets/test_server.sock", RailsTestServing.service_uri
+    end
+    
+    # RAILS_ROOT cannot be determined
+    setup_service_uri_test do
+      Pathname.stubs(:pwd).returns(Pathname("/foo/bar"))
+      FileTest.expects(:file?).with("config/boot.rb").returns false
+      FileTest.expects(:file?).with("../config/boot.rb").returns false
+      FileTest.expects(:file?).with("../../config/boot.rb").returns false
+      FileTest.expects(:file?).with("../../../config/boot.rb").never
+      FileUtils.expects(:mkpath).never
+      assert_raise(RuntimeError) { RailsTestServing.service_uri }
+    end
+  end
 
   def test_boot
     argv = []
@@ -25,6 +54,18 @@ class RailsTestServingTest < Test::Unit::TestCase
     Server.expects(:start)
     RailsTestServing.boot(argv)
     assert_equal [], argv
+  end
+  
+private
+
+  def setup_service_uri_test(wont_mkpath=false)
+    old_load_path = $:.dup
+    begin
+      return yield
+    ensure
+      RailsTestServing.instance_variable_set(:@service_uri, nil)
+      $:.replace(old_load_path)
+    end
   end
 end
 
