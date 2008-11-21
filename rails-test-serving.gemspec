@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rails-test-serving}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roman Le N\303\251grate"]
-  s.date = %q{2008-11-18}
+  s.date = %q{2008-11-21}
   s.description = %q{Makes unit tests of a Rails application run instantly}
   s.email = %q{roman.lenegrate@gmail.com}
   s.extra_rdoc_files = ["lib/rails_test_serving.rb", "LICENSE", "README.rdoc"]
