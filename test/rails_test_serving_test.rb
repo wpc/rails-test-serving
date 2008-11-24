@@ -218,7 +218,7 @@ class RailsTestServing::ServerTest < Test::Unit::TestCase
 
   def test_capture_test_result
     server = stub_server
-    cleaner = server.instance_variable_set(:@cleaner, stub)
+    cleaner = server.instance_variable_set("@cleaner", stub)
     
     cleaner.stubs(:clean_up_around).yields
     server.stubs(:capture_standard_stream).with('err').yields.returns "stderr"
