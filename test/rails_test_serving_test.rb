@@ -72,12 +72,12 @@ class RailsTestServingTest < Test::Unit::TestCase
   
 private
 
-  def setup_service_uri_test(wont_mkpath=false)
+  def setup_service_uri_test
     old_load_path = $:.dup
     begin
       return yield
     ensure
-      RailsTestServing.instance_variable_set(:@service_uri, nil)
+      RailsTestServing.instance_variable_set("@service_uri", nil)
       $:.replace(old_load_path)
     end
   end
