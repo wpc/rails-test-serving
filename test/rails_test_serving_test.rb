@@ -56,6 +56,20 @@ class RailsTestServingTest < Test::Unit::TestCase
     assert_equal [], argv
   end
   
+  def test_options
+    RailsTestServing.instance_variable_set("@options", nil)
+    $test_server_options = nil
+    assert_equal({:reload => []}, RailsTestServing.options)
+    
+    RailsTestServing.instance_variable_set("@options", nil)
+    $test_server_options = {:foo => :bar}
+    assert_equal({:foo => :bar, :reload => []}, RailsTestServing.options)
+    
+    RailsTestServing.instance_variable_set("@options", nil)
+    $test_server_options = {:foo => :bar, :reload => [//]}
+    assert_equal({:foo => :bar, :reload => [//]}, RailsTestServing.options)
+  end
+  
 private
 
   def setup_service_uri_test(wont_mkpath=false)
