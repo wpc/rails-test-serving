@@ -51,7 +51,7 @@ class RailsTestServingTest < Test::Unit::TestCase
     assert_equal [], argv
     
     argv = ["--serve"]
-    Server.expects(:start)
+    RailsTestServing.expects(:start_server)
     RailsTestServing.boot(argv)
     assert_equal [], argv
   end
