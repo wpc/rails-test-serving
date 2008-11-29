@@ -174,7 +174,6 @@ module RailsTestServing
     
   private
     
-    # TODO clean this up, making 'path' a Pathname instead of a String
     def shorten_path(path)
       shortenable, base = File.expand_path(path), File.expand_path(Dir.pwd)
       attempt = shortenable.sub(/^#{Regexp.escape base + File::SEPARATOR}/, '')
