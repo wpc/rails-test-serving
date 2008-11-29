@@ -160,10 +160,12 @@ module RailsTestServing
     
     def initialize
       ENV['RAILS_ENV'] = 'test'
-      enable_dependency_tracking
-      start_cleaner
-      load_framework
-      log "** Test server started (##{$$})\n"
+      log "** Test server starting [##{$$}]..." do
+        enable_dependency_tracking
+        start_cleaner
+        load_framework
+      end
+      install_signal_traps
     end
     
     def run(file, argv)
@@ -171,11 +173,6 @@ module RailsTestServing
     end
     
   private
-  
-    def log(message)
-      $stdout.print(message)
-      $stdout.flush
-    end
     
     # TODO clean this up, making 'path' a Pathname instead of a String
     def shorten_path(path)
@@ -209,17 +206,38 @@ module RailsTestServing
       end
     end
     
-    def perform_run(file, argv)
-      sanitize_arguments! file, argv
-      
-      log ">> " + [shorten_path(file), *argv].join(' ')
-      
-      result = nil
-      elapsed = Benchmark.realtime do
-        result = capture_test_result(file, argv)
+    def install_signal_traps
+      log " - CTRL+C: Stop the server\n"
+      trap(:INT) do
+        log "** Stopping the server..." do
+          DRb.thread.raise Interrupt
+        end
       end
-      log " (%d ms)\n" % (elapsed * 1000)
-      result
+      
+      log " - CTRL+Z: Reset database column information cache\n"
+      trap(:TSTP) do
+        GUARD.synchronize do
+          log "** Resetting database column information cache..." do
+            ActiveRecord::Base.instance_eval { subclasses }.each { |c| c.reset_column_information }
+          end
+        end
+      end
+
+      log " - CTRL+`: Reset lazy-loaded constants\n"
+      trap(:QUIT) do
+        GUARD.synchronize do
+          log "** Resetting lazy-loaded constants..." do
+            ActiveSupport::Dependencies.clear
+          end
+        end
+      end
+    end
+    
+    def perform_run(file, argv)
+      sanitize_arguments!(file, argv)
+      log ">> " + [shorten_path(file), *argv].join(' ') do
+        capture_test_result(file, argv)
+      end
     end
     
     def sanitize_arguments!(file, argv)
@@ -322,7 +340,27 @@ module RailsTestServing
       end
     end
     
-  private
+    module Logging
+      def log(message, stream=$stdout)
+        print = lambda do |str|
+          stream.print(str)
+          stream.flush
+        end
+
+        print[message]
+        if block_given?
+          result = nil
+          elapsed = Benchmark.realtime do
+            result = yield
+          end
+          print[" (%d ms)\n" % (elapsed * 1000)]
+          result
+        end
+      end
+    end
+    include Logging
+    
+  private # utilities
   
     def find_index_by_pattern(enumerable, pattern)
       enumerable.each_with_index do |element, index|

@@ -156,18 +156,15 @@ end
 class RailsTestServing::ServerTest < Test::Unit::TestCase
   
 # private
-
+  
   def test_perform_run
     server = stub_server
     file, argv = "test.rb", ["-n", "/pat/"]
     
     server.stubs(:sanitize_arguments!)
-    Benchmark.stubs(:realtime).yields.returns 1
+    server.stubs(:log).with(">> test.rb -n /pat/").yields.returns("result").once
+    server.stubs(:capture_test_result).with(file, argv)
     
-    server.expects(:log).with(">> test.rb -n /pat/").once
-    server.stubs(:capture_test_result).with(file, argv).returns "result"
-    server.expects(:log).with(" (1000 ms)\n").once
-  
     result = server.instance_eval { perform_run(file, argv) }
     assert_equal "result", result
   end
@@ -258,11 +255,31 @@ private
   S = RailsTestServing::Server
   
   def stub_server
+    S.any_instance.stubs(:log).yields
     S.any_instance.stubs(:enable_dependency_tracking)
     S.any_instance.stubs(:start_cleaner)
     S.any_instance.stubs(:load_framework)
-    S.any_instance.stubs(:log)
+    S.any_instance.stubs(:install_signal_traps)
     S.new
+  end
+end
+
+class RailsTestServing::Server::LoggingTest < Test::Unit::TestCase
+  def test_log
+    loggable = Object.new.extend RailsTestServing::Server::Logging
+    
+    # Blockless form
+    stream = StringIO.new
+    loggable.instance_eval { log("message", stream) }
+    assert_equal "message", stream.string
+    
+    # Block form
+    stream = StringIO.new
+    Benchmark.stubs(:realtime).yields.returns 1
+    yielded = []
+    loggable.instance_eval { log("message", stream) { yielded << true } }
+    assert_equal "message (1000 ms)\n", stream.string
+    assert_equal [true], yielded
   end
 end
 
