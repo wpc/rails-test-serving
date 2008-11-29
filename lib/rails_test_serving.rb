@@ -340,6 +340,15 @@ module RailsTestServing
       end
     end
     
+  private # utilities
+  
+    def find_index_by_pattern(enumerable, pattern)
+      enumerable.each_with_index do |element, index|
+        return index if pattern === element
+      end
+      nil
+    end
+    
     module Logging
       def log(message, stream=$stdout)
         print = lambda do |str|
@@ -359,15 +368,6 @@ module RailsTestServing
       end
     end
     include Logging
-    
-  private # utilities
-  
-    def find_index_by_pattern(enumerable, pattern)
-      enumerable.each_with_index do |element, index|
-        return index if pattern === element
-      end
-      nil
-    end
   end
   
   class Cleaner
