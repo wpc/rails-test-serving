@@ -195,16 +195,6 @@ module RailsTestServing
       result.reverse.join
     end
     
-    def capture_standard_stream(name)
-      eval("old, $std#{name} = $std#{name}, StringIO.new")
-      begin
-        yield
-        return eval("$std#{name}").string
-      ensure
-        eval("$std#{name} = old")
-      end
-    end
-    
     def capture_testrunner_result
       set_default_testrunner_stream(io = StringIO.new) { yield }
       io.string

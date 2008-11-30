@@ -154,16 +154,6 @@ class RailsTestServing::ServerTest < Test::Unit::TestCase
     assert_equal "stderrstdoutresult", result
   end
   
-  def test_capture_standard_stream
-    server = stub_server
-    assert_equal STDOUT, $stdout  # sanity check
-    
-    captured = server.instance_eval { capture_standard_stream('out') { print "test" } }
-    
-    assert_equal "test", captured
-    assert_equal STDOUT, $stdout
-  end
-  
   def test_capture_testrunner_result
     server = stub_server
     

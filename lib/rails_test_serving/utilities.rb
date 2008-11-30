@@ -16,6 +16,16 @@ module RailsTestServing
         result
       end
     end
+    
+    def capture_standard_stream(name)
+      eval("old, $std#{name} = $std#{name}, StringIO.new")
+      begin
+        yield
+        return eval("$std#{name}").string
+      ensure
+        eval("$std#{name} = old")
+      end
+    end
   
     def find_index_by_pattern(enumerable, pattern)
       enumerable.each_with_index do |element, index|
