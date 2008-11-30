@@ -90,14 +90,13 @@ class RailsTestServing::ServerTest < Test::Unit::TestCase
   
 private
 
-  S = RailsTestServing::Server
-  
   def stub_server
-    S.any_instance.stubs(:log).yields
-    S.any_instance.stubs(:enable_dependency_tracking)
-    S.any_instance.stubs(:start_cleaner)
-    S.any_instance.stubs(:load_framework)
-    S.any_instance.stubs(:install_signal_traps)
-    S.new
+    s = RailsTestServing::Server
+    s.any_instance.stubs(:log).yields
+    s.any_instance.stubs(:enable_dependency_tracking)
+    s.any_instance.stubs(:start_cleaner)
+    s.any_instance.stubs(:load_framework)
+    s.any_instance.stubs(:install_signal_traps)
+    s.new
   end
 end
