@@ -20,7 +20,9 @@ module RailsTestServing
     end
   
     def run(file, argv)
-      GUARD.synchronize { perform_run(file, argv) }
+      GUARD.synchronize do
+        perform_run(file, argv)
+      end
     end
   
   private
