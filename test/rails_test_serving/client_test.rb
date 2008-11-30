@@ -1,15 +1,17 @@
 require 'test_helper'
 
 class RailsTestServing::ClientTest < Test::Unit::TestCase
-  C = RailsTestServing::Client
+  def setup
+    @client = Object.new.extend RailsTestServing::Client
+  end
   
   def test_run_tests
-    C.expects(:run_tests!)
-    C.run_tests
+    @client.expects(:run_tests!)
+    @client.run_tests
     
-    C.disable do
-      C.expects(:run_tests!).never
-      C.run_tests
+    @client.disable do
+      @client.expects(:run_tests!).never
+      @client.run_tests
     end
   end
 end
