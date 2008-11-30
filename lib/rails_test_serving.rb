@@ -68,6 +68,9 @@ module RailsTestServing
     end
   end
   
+  autoload :Cleaner,    'rails_test_serving/cleaner'
+  autoload :Utilities,  'rails_test_serving/utilities'
+  
   module ConstantManagement
     extend self
     
@@ -157,6 +160,8 @@ module RailsTestServing
       DRb.start_service(RailsTestServing.service_uri, Server.new)
       DRb.thread.join
     end
+    
+    include Utilities
     
     def initialize
       ENV['RAILS_ENV'] = 'test'
@@ -338,36 +343,5 @@ module RailsTestServing
         end
       end
     end
-    
-  private # utilities
-  
-    def find_index_by_pattern(enumerable, pattern)
-      enumerable.each_with_index do |element, index|
-        return index if pattern === element
-      end
-      nil
-    end
-    
-    module Logging
-      def log(message, stream=$stdout)
-        print = lambda do |str|
-          stream.print(str)
-          stream.flush
-        end
-
-        print[message]
-        if block_given?
-          result = nil
-          elapsed = Benchmark.realtime do
-            result = yield
-          end
-          print[" (%d ms)\n" % (elapsed * 1000)]
-          result
-        end
-      end
-    end
-    include Logging
   end
-  
-  autoload :Cleaner, 'rails_test_serving/cleaner'
 end unless defined? RailsTestServing
