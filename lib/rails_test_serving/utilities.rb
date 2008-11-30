@@ -85,6 +85,12 @@ module RailsTestServing
         end
       end
     end
+    
+    def shorten_path(path)
+      shortenable, base = File.expand_path(path), File.expand_path(Dir.pwd)
+      attempt = shortenable.sub(/^#{Regexp.escape base + File::SEPARATOR}/, '')
+      attempt.length < path.length ? attempt : path
+    end
   
     def find_index_by_pattern(enumerable, pattern)
       enumerable.each_with_index do |element, index|

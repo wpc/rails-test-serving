@@ -25,12 +25,6 @@ module RailsTestServing
   
   private
   
-    def shorten_path(path)
-      shortenable, base = File.expand_path(path), File.expand_path(Dir.pwd)
-      attempt = shortenable.sub(/^#{Regexp.escape base + File::SEPARATOR}/, '')
-      attempt.length < path.length ? attempt : path
-    end
-  
     def enable_dependency_tracking
       require 'config/boot'
     

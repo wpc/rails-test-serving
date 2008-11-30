@@ -40,4 +40,14 @@ class RailsTestServing::UtilitiesTest < Test::Unit::TestCase
     
     assert_equal "test", captured
   end
+  
+  def test_shorten_path
+    Dir.stubs(:pwd).returns '/base'
+    
+    assert_equal 'test.rb', @utils.shorten_path('test.rb')
+    assert_equal 'test.rb', @utils.shorten_path('/base/test.rb')
+    assert_equal 'test.rb', @utils.shorten_path('/base/./test.rb')
+    assert_equal '/other-base/test.rb', @utils.shorten_path('/other-base/test.rb')
+    assert_equal '/other-base/test.rb', @utils.shorten_path('/other-base/././test.rb')
+  end
 end

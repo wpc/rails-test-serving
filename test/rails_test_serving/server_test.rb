@@ -50,17 +50,6 @@ class RailsTestServing::ServerTest < Test::Unit::TestCase
     end
   end
 
-  def test_shorten_path
-    server = stub_server
-    Dir.stubs(:pwd).returns '/base'
-    
-    assert_equal 'test.rb', server.instance_eval { shorten_path 'test.rb' }
-    assert_equal 'test.rb', server.instance_eval { shorten_path '/base/test.rb' }
-    assert_equal 'test.rb', server.instance_eval { shorten_path '/base/./test.rb' }
-    assert_equal '/other-base/test.rb', server.instance_eval { shorten_path '/other-base/test.rb' }
-    assert_equal '/other-base/test.rb', server.instance_eval { shorten_path '/other-base/././test.rb' }
-  end
-
   def test_capture_test_result
     server = stub_server
     cleaner = server.instance_variable_set("@cleaner", stub)
