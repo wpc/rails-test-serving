@@ -30,4 +30,14 @@ class RailsTestServing::UtilitiesTest < Test::Unit::TestCase
     assert_equal "test", captured
     assert_equal STDOUT, $stdout
   end
+  
+  def test_capture_testrunner_result
+    server = stub_server
+    
+    captured = server.instance_eval do
+      capture_testrunner_result { Thread.current["test_runner_io"].print "test" }
+    end
+    
+    assert_equal "test", captured
+  end
 end
