@@ -209,6 +209,7 @@ class RailsTestServing::ServerTest < Test::Unit::TestCase
     
     assert_equal 'test.rb', server.instance_eval { shorten_path 'test.rb' }
     assert_equal 'test.rb', server.instance_eval { shorten_path '/base/test.rb' }
+    assert_equal 'test.rb', server.instance_eval { shorten_path '/base/./test.rb' }
     assert_equal '/other-base/test.rb', server.instance_eval { shorten_path '/other-base/test.rb' }
     assert_equal '/other-base/test.rb', server.instance_eval { shorten_path '/other-base/././test.rb' }
   end
