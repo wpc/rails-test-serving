@@ -46,7 +46,7 @@ class RailsTestServing::ConstantManagementTest < Test::Unit::TestCase
   end
   
   def test_subclasses_of
-    assert_equal [C, B],  subclasses_of(A)
+    assert_equal [B, C],  subclasses_of(A).sort_by { |c| c.name }
     assert_equal [C],     subclasses_of(B)
     assert_equal [],      subclasses_of(C)
     
