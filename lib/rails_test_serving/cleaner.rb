@@ -2,7 +2,7 @@ module RailsTestServing
   class Cleaner
     include ConstantManagement
     
-    BREATH = 0.01
+    PAUSE = 0.01
     TESTCASE_CLASS_NAMES =  %w( Test::Unit::TestCase
                                 ActiveSupport::TestCase
                                 ActionView::TestCase
@@ -16,13 +16,13 @@ module RailsTestServing
     
     def clean_up_around
       check_worker_health
-      sleep BREATH while @working
+      sleep PAUSE while @working
       begin
         reload_app
         yield
       ensure
         @working = true
-        sleep BREATH until @worker.stop?
+        sleep PAUSE until @worker.stop?
         @worker.wakeup
       end
     end
