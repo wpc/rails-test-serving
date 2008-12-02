@@ -73,7 +73,7 @@ module RailsTestServing
       trap(:QUIT) do
         GUARD.synchronize do
           log "** Resetting lazy-loaded constants..." do
-            ActiveSupport::Dependencies.clear
+            (defined?(ActiveSupport::Dependencies) ? ActiveSupport::Dependencies : Dependencies).clear
           end
         end
       end
