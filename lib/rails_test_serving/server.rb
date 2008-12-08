@@ -56,7 +56,7 @@ module RailsTestServing
       log " - CTRL+C: Stop the server\n"
       trap(:INT) do
         log "** Stopping the server..." do
-          DRb.thread.raise Interrupt
+          DRb.thread.raise Interrupt, "stop"
         end
       end
     
