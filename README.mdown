@@ -32,7 +32,7 @@ Tired of waiting 10 seconds before your tests run? `RailsTestServing` can make t
         ruby test/unit/account_test.rb
         ruby test/unit/account_test.rb -n /balance/
 
-    As a consequence, they work in RubyMate too (⌘R in TextMate.
+    As a consequence, they work in RubyMate too (⌘R in TextMate).
 
 **Note:** if the server is not started, tests fall back to running the usual way.
 
