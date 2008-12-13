@@ -1,37 +1,37 @@
 # RailsTestServing
 
-Tired of waiting 10 seconds before your tests run? `RailsTestServing` can make them run almost instantly. This library is describe more thoroughly in its [introduction  article](http://roman.flucti.com/a-test-server-for-rails-applications).
+Tired of waiting 10 seconds before your tests run? `RailsTestServing` can make them run almost instantly. This library is described more thoroughly in its [introduction  article](http://roman.flucti.com/a-test-server-for-rails-applications).
 
 ## Usage
 
 1.  Install the gem:
 
-        gem install Roman2K-rails-test-serving -v '>= 0.1.3' -s http://gems.github.com
-    
+        gem install Roman2K-rails-test-serving -s http://gems.github.com
+
 2.  Insert the following lines at the very top of `test/test_helper.rb`:
 
         require 'rubygems'
         require 'rails_test_serving'
         RailsTestServing.boot
-    
+
 3.  Append the following line to `~/.bash_profile`:
-    
+
         export RUBYLIB=".:test:$RUBYLIB"
-    
+
     If you get loading errors during the next steps:
     * Move the `RUBYLIB` line from `~/.bash_profile` to `~/.bash_login` instead.
     * If you are using TextMate, you may try to apply [this (hopefully temporary) fix](http://roman.flucti.com/textmate-fix-for-relative-require-test_helper).
 
 4.  Start the server:
-    
+
         cd <project-dir>
         ruby test/test_helper.rb --serve
-    
+
 5.  Run tests as you usually do:
 
         ruby test/unit/account_test.rb
         ruby test/unit/account_test.rb -n /balance/
-    
+
     As a consequence, they work in RubyMate too (⌘R in TextMate.
 
 **Note:** if the server is not started, tests fall back to running the usual way.
@@ -49,7 +49,7 @@ Example `test_helper.rb` head:
     $test_server_options = { :reload => [/blueprint/] }
     require 'rails_test_serving'
     RailsTestServing.boot
-  
+
     # ...remainder here...
 
 When running tests from the command line, you can bypass the server, forcing tests to be run locally, by passing the `--local` flag. For example:
