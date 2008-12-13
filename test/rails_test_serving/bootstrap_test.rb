@@ -4,10 +4,10 @@ class RailsTestServing::BootstrapTest < Test::Unit::TestCase
   def setup
     @boot = Object.new.extend RailsTestServing::Bootstrap
   end
-  
+
   def test_service_uri
     Pathname.stubs(:pwd).returns(Pathname("/foo/bar"))
-    
+
     # RAILS_ROOT is the current directory
     setup_service_uri_test do
       FileTest.expects(:file?).with("config/boot.rb").returns true
