@@ -9,23 +9,27 @@ module RailsTestServing
 
     include Utilities
 
-    def initialize
-      ENV['RAILS_ENV'] = 'test'
-      log "** Test server starting [##{$$}]..." do
-        enable_dependency_tracking
-        start_cleaner
-        load_framework
-      end
-      install_signal_traps
-    end
-
     def run(file, argv)
       GUARD.synchronize do
+        prepare
         perform_run(file, argv)
       end
     end
 
   private
+  
+    def prepare
+      @prepared ||= begin
+        ENV['RAILS_ENV'] = 'test'
+        log "** Test server starting [##{$$}]..." do
+          enable_dependency_tracking
+          start_cleaner
+          load_framework
+        end
+        install_signal_traps
+        true
+      end
+    end
 
     def enable_dependency_tracking
       require 'config/boot'
@@ -55,8 +59,10 @@ module RailsTestServing
     def install_signal_traps
       log " - CTRL+C: Stop the server\n"
       trap(:INT) do
-        log "** Stopping the server..." do
-          DRb.thread.raise Interrupt, "stop"
+        GUARD.synchronize do
+          log "** Stopping the server..." do
+            DRb.thread.raise Interrupt, "stop"
+          end
         end
       end
 

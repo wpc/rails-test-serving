@@ -70,12 +70,6 @@ class RailsTestServing::ServerTest < Test::Unit::TestCase
 private
 
   def stub_server
-    s = RailsTestServing::Server
-    s.any_instance.stubs(:log).yields
-    s.any_instance.stubs(:enable_dependency_tracking)
-    s.any_instance.stubs(:start_cleaner)
-    s.any_instance.stubs(:load_framework)
-    s.any_instance.stubs(:install_signal_traps)
-    s.new
+    RailsTestServing::Server.new
   end
 end
