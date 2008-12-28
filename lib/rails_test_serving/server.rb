@@ -1,9 +1,12 @@
 module RailsTestServing
   class Server
     GUARD = Mutex.new
+    PREPARATION_GUARD = Mutex.new
 
     def self.start
-      DRb.start_service(RailsTestServing.service_uri, Server.new)
+      server = Server.new
+      DRb.start_service(RailsTestServing.service_uri, server)
+      Thread.new { server.prepare }
       DRb.thread.join
     end
 
@@ -15,21 +18,23 @@ module RailsTestServing
         perform_run(file, argv)
       end
     end
-
-  private
   
     def prepare
-      @prepared ||= begin
-        ENV['RAILS_ENV'] = 'test'
-        log "** Test server starting [##{$$}]..." do
-          enable_dependency_tracking
-          start_cleaner
-          load_framework
+      PREPARATION_GUARD.synchronize do
+        @prepared ||= begin
+          ENV['RAILS_ENV'] = 'test'
+          log "** Test server starting [##{$$}]..." do
+            enable_dependency_tracking
+            start_cleaner
+            load_framework
+          end
+          install_signal_traps
+          true
         end
-        install_signal_traps
-        true
       end
     end
+    
+  private
 
     def enable_dependency_tracking
       require 'config/boot'
