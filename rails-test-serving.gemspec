@@ -6,11 +6,11 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roman Le N\303\251grate"]
-  s.date = %q{2009-02-08}
+  s.date = %q{2009-02-09}
   s.description = %q{Makes unit tests of a Rails application run instantly}
   s.email = %q{roman.lenegrate@gmail.com}
-  s.extra_rdoc_files = ["lib/rails_test_serving.rb", "LICENSE", "README.rdoc"]
-  s.files = ["lib/rails_test_serving.rb", "LICENSE", "Rakefile", "README.rdoc", "test/rails_test_serving_test.rb", "Manifest", "rails-test-serving.gemspec", "test/rails_test_serving/bootstrap_test.rb", "test/rails_test_serving/cleaner_test.rb", "test/rails_test_serving/client_test.rb", "test/rails_test_serving/constant_management_test.rb", "test/rails_test_serving/server_test.rb", "test/rails_test_serving/utilities_test.rb", "test/test_helper.rb"]
+  s.extra_rdoc_files = ["lib/rails_test_serving/bootstrap.rb", "lib/rails_test_serving/cleaner.rb", "lib/rails_test_serving/client.rb", "lib/rails_test_serving/constant_management.rb", "lib/rails_test_serving/server.rb", "lib/rails_test_serving/utilities.rb", "lib/rails_test_serving.rb", "LICENSE", "README.mdown"]
+  s.files = ["lib/rails_test_serving/bootstrap.rb", "lib/rails_test_serving/cleaner.rb", "lib/rails_test_serving/client.rb", "lib/rails_test_serving/constant_management.rb", "lib/rails_test_serving/server.rb", "lib/rails_test_serving/utilities.rb", "lib/rails_test_serving.rb", "LICENSE", "Manifest", "Rakefile", "README.mdown", "test/rails_test_serving/bootstrap_test.rb", "test/rails_test_serving/cleaner_test.rb", "test/rails_test_serving/client_test.rb", "test/rails_test_serving/constant_management_test.rb", "test/rails_test_serving/server_test.rb", "test/rails_test_serving/utilities_test.rb", "test/test_helper.rb", "rails-test-serving.gemspec"]
   s.has_rdoc = true
   s.homepage = %q{https://github.com/Roman2K/rails-test-serving}
   s.rdoc_options = ["--main", "README.mdown", "--inline-source", "--line-numbers", "--charset", "UTF-8"]
