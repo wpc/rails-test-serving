@@ -3,14 +3,18 @@ module RailsTestServing
     GUARD = Mutex.new
     PREPARATION_GUARD = Mutex.new
 
-    def self.start
-      server = Server.new
+    def self.start(from_file='test_helper')
+      server = Server.new(from_file, mode)
       DRb.start_service(RailsTestServing.service_uri, server)
       Thread.new { server.prepare }
       DRb.thread.join
     end
 
     include Utilities
+    
+    def initialize(from_file)
+      @from_file = from_file
+    end
 
     def run(file, argv)
       GUARD.synchronize do
@@ -57,7 +61,7 @@ module RailsTestServing
     def load_framework
       Client.disable do
         $: << 'test'
-        require 'test_helper'
+        require @from_file
       end
     end
 
