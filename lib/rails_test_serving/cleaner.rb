@@ -10,7 +10,8 @@ module RailsTestServing
                                 ActionController::IntegrationTest
                                 ActionMailer::TestCase )
 
-    def initialize
+    def initialize(reloading_mode)
+      @reloading_mode = reloading_mode
       start_worker
     end
 
@@ -18,7 +19,7 @@ module RailsTestServing
       check_worker_health
       sleep PAUSE while @working
       begin
-        reload_app
+        @reloading_mode.reload_app
         yield
       ensure
         @working = true
@@ -35,7 +36,7 @@ module RailsTestServing
         loop do
           Thread.stop
           begin
-            clean_up_app
+            @reloading_mode.clean_up_app
             remove_tests
           ensure
             @working = false
@@ -52,51 +53,10 @@ module RailsTestServing
       end
     end
 
-    def clean_up_app
-      if ActionController::Dispatcher.respond_to?(:cleanup_application)
-        ActionController::Dispatcher.cleanup_application
-      else
-        ActionController::Dispatcher.new(StringIO.new).cleanup_application
-      end
-      if defined?(Fixtures) && Fixtures.respond_to?(:reset_cache)
-        Fixtures.reset_cache
-      end
-
-      # Reload files that match :reload here instead of in reload_app since the
-      # :reload option is intended to target files that don't change between two
-      # consecutive runs (an external library for example). That way, they are
-      # reloaded in the background instead of slowing down the next run.
-      reload_specified_source_files
-    end
-
     def remove_tests
       TESTCASE_CLASS_NAMES.each do |name|
         next unless klass = constantize(name)
         remove_constants(*subclasses_of(klass).map { |c| c.to_s }.grep(/Test$/) - TESTCASE_CLASS_NAMES)
-      end
-    end
-
-    def reload_app
-      if ActionController::Dispatcher.respond_to?(:reload_application)
-        ActionController::Dispatcher.reload_application
-      else
-        ActionController::Dispatcher.new(StringIO.new).reload_application
-      end
-    end
-
-    def reload_specified_source_files
-      to_reload =
-        $".select do |path|
-          RailsTestServing.options[:reload].any? do |matcher|
-            matcher === path
-          end
-        end
-
-      # Force a reload by removing matched files from $"
-      $".replace($" - to_reload)
-
-      to_reload.each do |file|
-        require file
       end
     end
   end

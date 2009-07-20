@@ -11,6 +11,7 @@ module RailsTestServing
   class ServerUnavailable < StandardError
   end
 
+  autoload :ReloadingMode, 'rails_test_serving/reloading_mode'
   autoload :Bootstrap,  'rails_test_serving/bootstrap'
   autoload :Server,     'rails_test_serving/server'
   autoload :Client,     'rails_test_serving/client'

@@ -38,6 +38,8 @@ module RailsTestServing
       @options ||= begin
         options = $test_server_options || {}
         options[:reload] ||= []
+        options[:test_helper] ||= "test_helper"
+        options[:after_server_prepared] ||= lambda {}
         options
       end
     end

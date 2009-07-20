@@ -1,19 +1,23 @@
 module RailsTestServing
+  
   class Server
     GUARD = Mutex.new
     PREPARATION_GUARD = Mutex.new
 
-    def self.start(from_file='test_helper')
-      server = Server.new(from_file, mode)
+    def self.start
+      server = Server.new(RailsTestServing.options[:reloading_mode])
       DRb.start_service(RailsTestServing.service_uri, server)
-      Thread.new { server.prepare }
+      Thread.new do 
+        server.prepare
+        RailsTestServing.options[:after_server_prepared].call
+      end
       DRb.thread.join
     end
 
     include Utilities
     
-    def initialize(from_file)
-      @from_file = from_file
+    def initialize(reloading_mode)
+      @reloading_mode = reloading_mode
     end
 
     def run(file, argv)
@@ -28,7 +32,7 @@ module RailsTestServing
         @prepared ||= begin
           ENV['RAILS_ENV'] = 'test'
           log "** Test server starting [##{$$}]..." do
-            enable_dependency_tracking
+            @reloading_mode.set_dependency_tracking
             start_cleaner
             load_framework
           end
@@ -40,28 +44,14 @@ module RailsTestServing
     
   private
 
-    def enable_dependency_tracking
-      require 'config/boot'
-
-      Rails::Configuration.class_eval do
-        unless method_defined? :cache_classes
-          raise "#{self.class} out of sync with current Rails version"
-        end
-
-        def cache_classes
-          false
-        end
-      end
-    end
-
     def start_cleaner
-      @cleaner = Cleaner.new
+      @cleaner = Cleaner.new(@reloading_mode)
     end
 
     def load_framework
       Client.disable do
         $: << 'test'
-        require @from_file
+        require RailsTestServing.options[:test_helper]
       end
     end
 
@@ -70,6 +60,7 @@ module RailsTestServing
       trap(:INT) do
         GUARD.synchronize do
           log "** Stopping the server..." do
+            Test::Unit.run = true
             DRb.thread.raise Interrupt, "stop"
           end
         end
