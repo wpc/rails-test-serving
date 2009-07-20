@@ -37,6 +37,12 @@ module RailsTestServing
           Thread.stop
           begin
             @reloading_mode.clean_up_app
+            # Reload files that match :reload here instead of in reload_app since the
+            # :reload option is intended to target files that don't change between two
+            # consecutive runs (an external library for example). That way, they are
+            # reloaded in the background instead of slowing down the next run.
+            reload_specified_source_files
+                        
             remove_tests
           ensure
             @working = false
@@ -59,5 +65,22 @@ module RailsTestServing
         remove_constants(*subclasses_of(klass).map { |c| c.to_s }.grep(/Test$/) - TESTCASE_CLASS_NAMES)
       end
     end
+    
+    def reload_specified_source_files
+      to_reload =
+        $".select do |path|
+          RailsTestServing.options[:reload].any? do |matcher|
+            matcher === path
+          end
+        end
+
+      # Force a reload by removing matched files from $"
+      $".replace($" - to_reload)
+
+      to_reload.each do |file|
+        require file
+      end
+    end
+    
   end
 end
